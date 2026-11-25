@@ -1,0 +1,38 @@
+{
+  "name": "mail-bridge",
+  "version": "1.0.0",
+  "description": "A lightweight email gateway built with Node.js, TypeScript, and Resend for email forwarding, contact form handling, and automated email notifications.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/server.js",
+    "build": "tsc",
+    "dev": "tsx watch src/server.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BulusHamnu/mail-bridge.git"
+  },
+  "keywords": [],
+  "type": "module",
+  "bugs": {
+    "url": "https://github.com/BulusHamnu/mail-bridge/issues"
+  },
+  "homepage": "https://github.com/BulusHamnu/mail-bridge#readme",
+  "dependencies": {
+    "chalk": "^6.0.1",
+    "cors": "^2.8.6",
+    "dotenv": "^18.0.10",
+    "express": "^5.3.0",
+    "morgan": "^1.12.1",
+    "winston": "^3.19.0"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.19",
+    "@types/express": "^5.0.6",
+    "@types/morgan": "^1.9.10",
+    "@types/node": "^26.6.10",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2"
+  }
+}

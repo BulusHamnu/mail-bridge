@@ -1,0 +1,35 @@
+import express from "express";
+import env from "./config/index.js";
+import cors from "cors";
+import morgan from "morgan";
+import logger from "./utils/logger.js";
+
+const app = express();
+
+app.use(express.json());
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+    credentials: true,
+  }),
+);
+app.use(
+  morgan("dev", {
+    stream: {
+      write: (s: string) => {
+        logger.http(s.trim());
+      },
+    },
+  }),
+);
+
+app.get("/", (req, res) => {
+  res.send(`
+    <h1>Welcome to Mail Bridge API</h1>
+    <p>A lightweight email gateway built with Node.js, TypeScript, and Resend for email forwarding, contact form handling, and automated email notifications.</p>
+  `);
+});
+
+app.listen(env.PORT, () => {
+  logger.info(`Server started on: http://localhost:${env.PORT}`);
+});
