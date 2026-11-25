@@ -7,7 +7,12 @@ import webhookRoutes from "./routes/webhook.route.js";
 
 const app = express();
 
-app.use(express.json());
+app.use((req, res, next) => {
+  if (req.originalUrl === "/api/webhook/resend") {
+    return express.raw({ type: "application/json" })(req, res, next);
+  }
+  express.json()(req, res, next);
+});
 app.use(
   cors({
     origin: ["http://localhost:3000"],
