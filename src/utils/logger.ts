@@ -2,15 +2,24 @@ import { createLogger, format, transports } from "winston";
 import chalk from "chalk";
 
 const myFormat = format.printf(
-  ({ level, timestamp, message, stack, ...meta }): string => {
-    if (stack) {
-      return `[${level}][${chalk.blueBright(
-        timestamp,
-      )}]: ${message} ${chalk.red(stack)}`;
-    }
-    return `[${level}][${chalk.blueBright(timestamp)}]: ${message} ${
-      Object.keys(meta).length > 0 ? JSON.stringify(meta, null) : ""
-    }`;
+  ({ level, timestamp, message, stack, cause, ...meta }): string => {
+    const errorDetails = [
+      stack && chalk.red(stack),
+      cause &&
+        chalk.yellow(
+          `Cause: ${
+            cause instanceof Error
+              ? cause.stack || cause.message
+              : JSON.stringify(cause)
+          }`,
+        ),
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    return `[${level}][${chalk.blueBright(timestamp)}]: ${message}${
+      errorDetails ? `\n${errorDetails}` : ""
+    }${Object.keys(meta).length ? `\n${JSON.stringify(meta, null, 2)}` : ""}`;
   },
 );
 
