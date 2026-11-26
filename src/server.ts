@@ -5,6 +5,7 @@ import morgan from "morgan";
 import logger from "./utils/logger.js";
 import webhookRoutes from "./routes/webhook.route.js";
 import connectDB from "./config/db.js";
+import contactRoutes from "./routes/contact.route.js";
 
 const app = express();
 
@@ -31,6 +32,7 @@ app.use(
 );
 
 app.use("/api/webhook", webhookRoutes);
+app.use("/api/contact", contactRoutes);
 
 app.get("/", async (req, res) => {
   res.send(`

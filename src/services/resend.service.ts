@@ -15,7 +15,7 @@ import {
 const resend = new Resend(env.RESEND_API_KEY);
 
 /* Send Email */
-async function sendEmail(payload: CreateEmailOptions): Promise<void> {
+export async function sendEmail(payload: CreateEmailOptions): Promise<void> {
   const key = generateIdempotencyKey();
   const requestOptions: CreateEmailRequestOptions = {
     idempotencyKey: `mail-bridge-${key}`,
