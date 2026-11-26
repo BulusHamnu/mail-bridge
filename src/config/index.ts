@@ -7,6 +7,7 @@ interface env {
   RESEND_API_KEY: string;
   ADMIN_EMAIL: string;
   RESEND_WEBHOOK_SECRET: string;
+  MONGODB_URI: string;
 }
 
 const env: env = {
@@ -14,6 +15,7 @@ const env: env = {
   RESEND_API_KEY: process.env.RESEND_API_KEY || "",
   ADMIN_EMAIL: process.env.ADMIN_EMAIL || "",
   RESEND_WEBHOOK_SECRET: process.env.RESEND_WEBHOOK_SECRET || "",
+  MONGODB_URI: process.env.MONGODB_URI || "",
 };
 
 export default env;

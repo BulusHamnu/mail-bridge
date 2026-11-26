@@ -4,6 +4,7 @@ import cors from "cors";
 import morgan from "morgan";
 import logger from "./utils/logger.js";
 import webhookRoutes from "./routes/webhook.route.js";
+import connectDB from "./config/db.js";
 
 const app = express();
 
@@ -38,6 +39,7 @@ app.get("/", async (req, res) => {
   `);
 });
 
-app.listen(env.PORT, () => {
+app.listen(env.PORT, async () => {
+  await connectDB();
   logger.info(`Server started on: http://localhost:${env.PORT}`);
 });
