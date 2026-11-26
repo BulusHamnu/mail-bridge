@@ -3,8 +3,12 @@ import { forwardEmail, resend } from "../services/resend.service.js";
 import logger from "../utils/logger.js";
 import type { EmailReceivedEvent, WebhookEventPayload } from "resend";
 import env from "../config/index.js";
+import type { Response as CustomResponse } from "../types/express.type.js";
 
-export async function handleResendWebhook(req: Request, res: Response) {
+export async function handleResendWebhook(
+  req: Request,
+  res: Response<CustomResponse<null>>,
+) {
   try {
     logger.info("New webhook event received");
 
@@ -16,9 +20,11 @@ export async function handleResendWebhook(req: Request, res: Response) {
       !req.headers["svix-signature"]
     ) {
       logger.error("Missing required headers for webhook verification");
-      return res
-        .status(400)
-        .json({ message: "Missing required headers for webhook verification" });
+      return res.status(400).json({
+        status: false,
+        message: "Missing required headers for webhook verification",
+        data: null,
+      });
     }
 
     let result: WebhookEventPayload | null = null;
@@ -43,6 +49,7 @@ export async function handleResendWebhook(req: Request, res: Response) {
         type: result.type,
       });
       return res.status(400).json({
+        status: false,
         message: "Received webhook event is not of type 'email.received'",
       });
     }
@@ -57,18 +64,24 @@ export async function handleResendWebhook(req: Request, res: Response) {
 
     await forwardEmail(event.data.email_id);
 
-    res.status(200).json({ message: "Webhook received successfully" });
+    res.status(200).json({
+      status: true,
+      message: "Webhook received successfully",
+      data: null,
+    });
   } catch (error) {
     if (error instanceof Error && error.name === "WebhookVerificationError") {
       logger.error("Webhook verification failed", error);
-      return res.status(400).json({ message: "Webhook verification failed" });
+      return res
+        .status(400)
+        .json({ status: false, message: "Webhook verification failed" });
     }
 
     if (error instanceof Error && error.name === "IdempotencyKeyPendingError") {
       logger.error("Idempotency key is already pending", error);
       return res
         .status(400)
-        .json({ message: "Idempotency key is already pending" });
+        .json({ status: false, message: "Idempotency key is already pending" });
     }
 
     if (
@@ -76,12 +89,13 @@ export async function handleResendWebhook(req: Request, res: Response) {
       error.name === "IdempotencyKeySucceededError"
     ) {
       logger.error("Idempotency key has already succeeded", error);
-      return res
-        .status(200)
-        .json({ message: "Webhook event was processed successfully" });
+      return res.status(200).json({
+        status: true,
+        message: "Webhook event was processed successfully",
+      });
     }
 
     logger.error("Error processing webhook event", error);
-    res.status(500).json({ message: "Internal server error" });
+    res.status(500).json({ status: false, message: "Internal server error" });
   }
 }
