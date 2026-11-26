@@ -7,6 +7,10 @@ import {
 } from "resend";
 import env from "../config/index.js";
 import { generateIdempotencyKey } from "../utils/functions.utils.js";
+import {
+  createIdempotencyKey,
+  updateIdempotencyKeyStatus,
+} from "./idempotency.service.js";
 
 const resend = new Resend(env.RESEND_API_KEY);
 
@@ -85,6 +89,8 @@ async function retrieveAndDownloadAttachments(
 async function forwardEmail(emailId: string) {
   logger.info(`Forwarding email with ID: ${emailId} to the admin...`);
 
+  await createIdempotencyKey(emailId);
+
   const email = await retrieveEmail(emailId);
   const attachments = await retrieveAndDownloadAttachments(emailId);
 
@@ -104,6 +110,8 @@ async function forwardEmail(emailId: string) {
   if (email.html) emailPayload.html = email.html;
 
   await sendEmail(emailPayload);
+
+  await updateIdempotencyKeyStatus(emailId, "succeeded");
 }
 
 export { forwardEmail, retrieveEmail, retrieveAndDownloadAttachments, resend };

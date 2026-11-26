@@ -64,6 +64,23 @@ export async function handleResendWebhook(req: Request, res: Response) {
       return res.status(400).json({ message: "Webhook verification failed" });
     }
 
+    if (error instanceof Error && error.name === "IdempotencyKeyPendingError") {
+      logger.error("Idempotency key is already pending", error);
+      return res
+        .status(400)
+        .json({ message: "Idempotency key is already pending" });
+    }
+
+    if (
+      error instanceof Error &&
+      error.name === "IdempotencyKeySucceededError"
+    ) {
+      logger.error("Idempotency key has already succeeded", error);
+      return res
+        .status(200)
+        .json({ message: "Webhook event was processed successfully" });
+    }
+
     logger.error("Error processing webhook event", error);
     res.status(500).json({ message: "Internal server error" });
   }
