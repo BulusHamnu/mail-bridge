@@ -6,6 +6,7 @@ import logger from "./utils/logger.js";
 import webhookRoutes from "./routes/webhook.route.js";
 import connectDB from "./config/db.js";
 import contactRoutes from "./routes/contact.route.js";
+import rateLimiter from "./middlewares/rateLimiter.js";
 
 const app = express();
 
@@ -32,7 +33,7 @@ app.use(
 );
 
 app.use("/api/webhook", webhookRoutes);
-app.use("/api/contact", contactRoutes);
+app.use("/api/contact", rateLimiter(5, 10 * 60 * 1000), contactRoutes);
 
 app.get("/", async (req, res) => {
   res.send(`
